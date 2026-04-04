@@ -1,0 +1,26 @@
+graph TD
+    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px,stroke-dasharray:5 5;
+    classDef process fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+
+    AnyEmployee["Любой сотрудник"]:::external
+    Admin["Администратор"]:::external
+
+    P1(("5.1 Аутентификация (AD -> Keycloak+LDAP+MFA)")):::process
+    P2(("5.2 Доступ к данным (файловый сервер -> портал+БД для новых данных)")):::process
+    P3(("5.3 Выдача прав (нет RBAC -> внедрение ABAC)")):::process
+
+    AD[("Active Directory (остаётся для legacy + синхронизация с Keycloak)")]:::storage
+    FS[("Файловый сервер (только архив + BitLocker+SACL)")]:::storage
+    Portal[("Портал + Postgres (новые активные данные)")]:::storage
+
+    AnyEmployee -->|"Логин, пароль [Класс_3]"| P1
+    P1 -->|"Аутентификация [Класс_5]"| AD
+    AD -->|"Подтверждение/отказ [Класс_5]"| P1
+    
+    P1 -->|"Доступ разрешён [Класс_5]"| P2
+    P2 -->|"Новые записи (Класс_1-4)"| Portal
+    P2 -->|"Архивные файлы (Класс_1-4)"| FS
+    
+    Admin -->|"Настройка политик ABAC [Класс_5]"| P3
+    P3 -->|"Атрибуты доступа [Класс_5]"| P2

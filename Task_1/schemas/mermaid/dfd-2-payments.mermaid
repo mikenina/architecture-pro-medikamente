@@ -1,0 +1,35 @@
+graph TD
+    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px,stroke-dasharray:5 5;
+    classDef process fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+
+    Patient["Пациент"]:::external
+    Cashier["Кассир (работает через Платёжный шлюз)"]:::external
+    Accountant["Бухгалтер"]:::external
+
+    P1(("2.1 Приём оплаты (касса -> Платёжный шлюз)")):::process
+    P2(("2.2 Фиксация платежа в 1С (через API)")):::process
+    P4(("2.3 Формирование отчётности и аудит")):::process
+
+    KKM[("KKM (интеграция со Шлюзом)")]:::storage
+    S1[("1С:Бухгалтерия (клиент-сервер, Postgres + RBAC + Аудит)")]:::storage
+    Excel[("Excel-журнал (устаревший, выводится из эксплуатации)")]:::storage
+
+    Patient -->|"Оплата услуги [Класс_4]"| P1
+    Cashier -->|"Инициирование платежа [Класс_4]"| P1
+    
+    P1 -->|"Фискальный чек [Класс_4]"| KKM
+    P1 -->|"Данные платежа (TLS) [Класс_4]"| P2
+    
+    P2 -->|"Запись в 1С [Класс_4]"| S1
+    
+    Accountant -->|"Запрос на отчётность [Класс_5]"| P4
+    P4 -->|"Чтение данных через RBAC [Класс_4]"| S1
+    P4 -->|"Логирование доступа [Класс_5]"| S1
+
+    Excel -.->|"Планируемый вывод из эксплуатации"| P2
+
+    style Excel fill:#ffccbc,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 5
+    style S1 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style P1 fill:#e1f5fe,stroke:#01579b
+    style P2 fill:#e1f5fe,stroke:#01579b

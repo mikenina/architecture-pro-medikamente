@@ -1,0 +1,30 @@
+graph TD
+    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px,stroke-dasharray:5 5;
+    classDef process fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef problem fill:#ffccbc,stroke:#bf360c,stroke-width:3px;
+
+    Doctor["Врач"]:::external
+    ReceptionStaff["Сотрудник ресепшена"]:::external
+    AnyStaff["Любой сотрудник (нет RBAC)"]:::external
+
+    P1(("4.1 Создание медкарты")):::process
+    P2(("4.2 Чтение медкарты")):::process
+    P3(("4.3 Обновление медкарты")):::process
+
+    D1[("D3: Data file (папка пациента)")]:::storage
+    D2[("Общий диск / файловый сервер")]:::storage
+
+    ReceptionStaff -->|"Скан договора и анкета [Класс_2]"| P1
+    Doctor -->|"Диагноз и заключение [Класс_1]"| P3
+    
+    P1 -->|"Сохранение [Класс_2]"| D1
+    P3 -->|"Обновление [Класс_1]"| D1
+    
+    D1 -->|"Хранение на общем диске [Класс_1-2]"| D2
+    
+    AnyStaff -->|"Любой доступ (нет ограничений) [Класс_1-2]"| P2
+    P2 -->|"Чтение [Класс_1-2]"| D1
+    
+    style AnyStaff fill:#ffccbc,stroke:#bf360c,stroke-width:3px
+    style D2 fill:#ffccbc,stroke:#bf360c,stroke-width:3px

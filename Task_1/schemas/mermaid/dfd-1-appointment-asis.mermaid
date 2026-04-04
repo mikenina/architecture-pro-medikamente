@@ -1,0 +1,34 @@
+graph TD
+    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px,stroke-dasharray:5 5;
+    classDef process fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+
+    Patient["Пациент"]:::external
+    Doctor["Врач"]:::external
+    ReceptionStaff["Сотрудник ресепшена"]:::external
+
+    P1(("1.1 Проверка/регистрация пациента")):::process
+    P2(("1.2 Создание записи к врачу")):::process
+    P3(("1.3 Формирование напоминания")):::process
+    P4(("1.4 Чтение расписания")):::process
+
+    D1[("D1: Patients.xlsx")]:::storage
+    D2[("D2: Journal-Doctor-FIO.xlsx")]:::storage
+    D3[("D3: Data file (папка пациента)")]:::storage
+
+    Patient -->|"Контактные данные и жалоба [Класс_2]"| P1
+    ReceptionStaff -->|"Ввод данных [Класс_3]"| P1
+    
+    P1 -->|"Данные пациента [Класс_3]"| D1
+    P1 -->|"Скан договора и анкета [Класс_2]"| D3
+    
+    P1 -->|"Данные пациента [Класс_3]"| P2
+    P2 -->|"Запись к врачу [Класс_2]"| D2
+    
+    D2 -->|"Журнал записей [Класс_2]"| P4
+    P4 -->|"Расписание [Класс_2]"| Doctor
+    
+    Doctor -->|"Диагноз и заключение [Класс_1]"| D3
+    
+    D2 -->|"Записи на завтра [Класс_2]"| P3
+    P3 -->|"Напоминание [Класс_3]"| Patient

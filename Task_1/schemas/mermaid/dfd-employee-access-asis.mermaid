@@ -1,0 +1,28 @@
+graph TD
+    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px,stroke-dasharray:5 5;
+    classDef process fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef problem fill:#ffccbc,stroke:#bf360c,stroke-width:3px;
+
+    AnyEmployee["Любой сотрудник"]:::external
+    Admin["Администратор"]:::external
+
+    P1(("5.1 Аутентификация в AD")):::process
+    P2(("5.2 Доступ к файловому серверу")):::process
+    P3(("5.3 Выдача прав (нет RBAC)")):::problem
+
+    AD[("Active Directory")]:::storage
+    FS[("Файловый сервер")]:::storage
+
+    AnyEmployee -->|"Логин, пароль [Класс_3]"| P1
+    P1 -->|"Аутентификация [Класс_5]"| AD
+    AD -->|"Подтверждение/отказ [Класс_5]"| P1
+    
+    P1 -->|"Доступ разрешён [Класс_5]"| P2
+    P2 -->|"Чтение/запись файлов [Класс_1-4]"| FS
+    
+    Admin -->|"Настройка прав (группы AD) [Класс_5]"| P3
+    P3 -->|"Все сотрудники → все файлы (нет RBAC) [Класс_5]"| P2
+
+    style P3 fill:#ffccbc,stroke:#bf360c,stroke-width:3px
+    style FS fill:#ffccbc,stroke:#bf360c,stroke-width:3px

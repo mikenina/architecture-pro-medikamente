@@ -1,0 +1,43 @@
+graph TD
+    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px,stroke-dasharray:5 5;
+    classDef process fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+
+    Doctor["Врач"]:::external
+    Laboratory["Лаборатория"]:::external
+    Patient["Пациент"]:::external
+
+    P1(("3.1 Формирование направления (через портал)")):::process
+    P2(("3.2 Создание реестра анализов (автоматическое)")):::process
+    P3(("3.3 Передача в лабораторию (email -> API с mTLS)")):::process
+    P4(("3.4 Приём результатов (через API)")):::process
+    P5(("3.5 Сохранение результатов (шифрование, тегирование)")):::process
+    P6(("3.6 Уведомление врача и пациента")):::process
+
+    DB[("Postgres (направления, реестры)")]:::storage
+    MedCardStorage[("Медкарта (Postgres, шифрование PDF)")]:::storage
+    AuditStore[("Хранилище аудита")]:::storage
+
+    Doctor -->|"Назначение анализов [Класс_2]"| P1
+    P1 -->|"Сохранение направления [Класс_2]"| DB
+    P1 -->|"Лог действия [Класс_5]"| AuditStore
+
+    DB -->|"Данные для реестра [Класс_2]"| P2
+    P2 -->|"Реестр анализов [Класс_2]"| P3
+    P2 -->|"Лог создания реестра [Класс_5]"| AuditStore
+
+    P3 -->|"API-запрос (mTLS) [Класс_2]"| Laboratory
+    Laboratory -->|"Подтверждение [Класс_5]"| P3
+    P3 -->|"Лог передачи [Класс_5]"| AuditStore
+
+    Laboratory -->|"Результаты (PDF, зашифровано) [Класс_1]"| P4
+    P4 -->|"Результаты [Класс_1]"| P5
+    P4 -->|"Лог получения [Класс_5]"| AuditStore
+
+    P5 -->|"Сохранение с тегами [Класс_1]"| MedCardStorage
+    P5 -->|"Лог сохранения [Класс_5]"| AuditStore
+
+    P5 -->|"Готово"| P6
+    P6 -->|"Уведомление [Класс_3]"| Doctor
+    P6 -->|"Уведомление [Класс_3]"| Patient
+    P6 -->|"Лог уведомления [Класс_5]"| AuditStore
