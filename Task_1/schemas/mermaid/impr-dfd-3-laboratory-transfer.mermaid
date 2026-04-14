@@ -1,0 +1,37 @@
+graph TD
+    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px,stroke-dasharray:5 5;
+    classDef process fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef externalSystem fill:#ffebee,stroke:#c62828,stroke-width:2px;
+    classDef security fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,stroke-dasharray:4 4;
+
+    Doctor["Врач"]:::external
+    ReceptionStaff["Сотрудник ресепшена"]:::external
+    Laboratory["Лаборатория (внешняя)"]:::externalSystem
+
+    P1(("3.1 Формирование направления (бланк с защитой от подделки)")):::process
+    P2(("3.2 Создание реестра анализов (пароль на Excel, аудит)")):::process
+    P3(("3.3 Передача в лабораторию (шифрование PDF, email по TLS)")):::process
+    P4(("3.4 Приём результатов (проверка подписи лаборатории)")):::process
+    P5(("3.5 Сохранение результатов (EFS шифрование, SACL аудит)")):::process
+
+    D1[("RegistryByDate.xlsx (пароль, доступ по роли)")]:::storage
+    D2[("D3: Data file (папка пациента) (EFS шифрование, SACL аудит)")]:::storage
+
+    Security[("Доп. меры: BitLocker/LUKS (диск сервера), шифрование email (S/MIME или PGP), цифровая подпись лаборатории, резервное копирование")]:::security
+
+    Doctor -->|"Назначение анализов [Класс_2]"| P1
+    P1 -->|"ФИО, дата, список анализов (инициалы) [Класс_2]"| P2
+    
+    ReceptionStaff -->|"Ввод данных в реестр (только при необходимости) [Класс_2]"| P2
+    
+    P2 -->|"Реестр за день (защищён) [Класс_2]"| D1
+    D1 -->|"Реестр анализов [Класс_2]"| P3
+    P3 -->|"Передача по email (TLS, шифрование вложения) [Класс_2]"| Laboratory
+    
+    Laboratory -->|"Результаты анализов (PDF, цифровая подпись) [Класс_1]"| P4
+    P4 -->|"Результаты (проверка подписи) [Класс_1]"| P5
+    P5 -->|"Сохранение (шифрование, аудит) [Класс_1]"| D2
+
+    D1 -.->|"защита"| Security
+    D2 -.->|"защита"| Security

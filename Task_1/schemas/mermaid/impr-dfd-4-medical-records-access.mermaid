@@ -1,0 +1,32 @@
+graph TD
+    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px,stroke-dasharray:5 5;
+    classDef process fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef security fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,stroke-dasharray:4 4;
+
+    Doctor["Врач"]:::external
+    ReceptionStaff["Сотрудник ресепшена"]:::external
+    AnyStaff["Любой сотрудник"]:::external
+
+    P1(("4.1 Создание медкарты (проверка прав, EFS шифрование)")):::process
+    P2(("4.2 Чтение медкарты (ABAC, SACL аудит)")):::process
+    P3(("4.3 Обновление медкарты (аудит изменений, EFS)")):::process
+
+    D1[("D3: Data file (папка пациента) (EFS шифрование, NTFS права)")]:::storage
+    D2[("Общий диск / файловый сервер")]:::storage
+
+    Security[("Доп. меры: BitLocker/LUKS (диск сервера), SACL (аудит доступа), EFS (шифрование папок), группы AD (разграничение доступа), резервное копирование")]:::security
+
+    ReceptionStaff -->|"Скан договора и анкета [Класс_2]"| P1
+    Doctor -->|"Диагноз и заключение [Класс_1]"| P3
+    
+    P1 -->|"Сохранение (шифрование, аудит) [Класс_2]"| D1
+    P3 -->|"Обновление (аудит изменений) [Класс_1]"| D1
+    
+    D1 -->|"Хранение на общем диске [Класс_1-2]"| D2
+    
+    AnyStaff -->|"Запрос доступа (ABAC) [Класс_1-2]"| P2
+    P2 -->|"Разрешить/отказать + аудит [Класс_1-2]"| D1
+
+    D1 -.->|"защита"| Security
+    D2 -.->|"защита"| Security

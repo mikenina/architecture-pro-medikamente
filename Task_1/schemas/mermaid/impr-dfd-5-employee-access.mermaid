@@ -1,0 +1,30 @@
+graph TD
+    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px,stroke-dasharray:5 5;
+    classDef process fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef security fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,stroke-dasharray:4 4;
+
+    AnyEmployee["Любой сотрудник"]:::external
+    Admin["Администратор"]:::external
+
+    P1(("5.1 Аутентификация в AD (добавлен MFA, LDAPS)")):::process
+    P2(("5.2 Доступ к файловому серверу (RBAC по группам AD)")):::process
+    P3(("5.3 Выдача прав (внедрен PAM, разделение ролей)")):::process
+
+    AD[("Active Directory (LDAPS, Kerberos)")]:::storage
+    FS[("Файловый сервер (BitLocker/LUKS, SACL)")]:::storage
+
+    Security[("Доп. меры: резервное копирование, мониторинг (Wazuh)")]:::security
+
+    AnyEmployee -->|"Логин, пароль [Класс_3]"| P1
+    P1 -->|"Аутентификация [Класс_5]"| AD
+    AD -->|"Подтверждение/отказ [Класс_5]"| P1
+    
+    P1 -->|"Доступ разрешён [Класс_5]"| P2
+    P2 -->|"Чтение/запись файлов [Класс_1-4]"| FS
+    
+    Admin -->|"Настройка прав (группы AD) [Класс_5]"| P3
+    P3 -->|"Разграничение доступа (RBAC) [Класс_5]"| P2
+
+    FS -.->|"защита"| Security
+    AD -.->|"защита"| Security

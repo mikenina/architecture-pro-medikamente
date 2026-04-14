@@ -1,0 +1,41 @@
+graph TD
+    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px,stroke-dasharray:5 5;
+    classDef process fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef security fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,stroke-dasharray:4 4;
+
+    Patient["Пациент"]:::external
+    Doctor["Врач"]:::external
+    ReceptionStaff["Сотрудник ресепшена"]:::external
+
+    P1(("1.1 Проверка/регистрация пациента (проверка прав доступа)")):::process
+    P2(("1.2 Создание записи к врачу (аудит изменений)")):::process
+    P3(("1.3 Формирование напоминания")):::process
+    P4(("1.4 Чтение расписания (ограничение по роли)")):::process
+
+    D1[("D1: Patients.xlsx (пароль на открытие, доступ по группам AD)")]:::storage
+    D2[("D2: Journal-Doctor-FIO.xlsx (SACL аудит, пароль)")]:::storage
+    D3[("D3: Data file (папка пациента) (EFS шифрование, SACL аудит)")]:::storage
+
+    Security[("Доп. меры: BitLocker/LUKS (диск сервера), SACL (аудит доступа), EFS (шифрование папок), резервное копирование")]:::security
+
+    Patient -->|"Контактные данные и жалоба [Класс_2]"| P1
+    ReceptionStaff -->|"Ввод данных [Класс_3]"| P1
+    
+    P1 -->|"Данные пациента [Класс_3]"| D1
+    P1 -->|"Скан договора и анкета [Класс_2]"| D3
+    
+    P1 -->|"Данные пациента [Класс_3]"| P2
+    P2 -->|"Запись к врачу [Класс_2]"| D2
+    
+    D2 -->|"Журнал записей [Класс_2]"| P4
+    P4 -->|"Расписание [Класс_2]"| Doctor
+    
+    Doctor -->|"Диагноз и заключение [Класс_1]"| D3
+    
+    D2 -->|"Записи на завтра [Класс_2]"| P3
+    P3 -->|"Напоминание [Класс_3]"| Patient
+
+    D1 -.->|"защита"| Security
+    D2 -.->|"защита"| Security
+    D3 -.->|"защита"| Security
