@@ -1,0 +1,39 @@
+graph TD
+    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px,stroke-dasharray:5 5;
+    classDef process fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef system fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px;
+    classDef security fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,stroke-dasharray:4 4;
+
+    Patient["Пациент"]:::external
+    Cashier["Кассир"]:::external
+    Accountant["Бухгалтер"]:::external
+
+    P1(("2.1 Приём оплаты (проверка прав, чек)")):::process
+    P2(("2.2 Фиксация платежа в 1С (шифрование канала, аудит)")):::process
+    P3(("2.3 Учёт в Excel (защита паролем, доступ по роли)")):::process
+    P4(("2.4 Сверка отчётности (RBAC на папки)")):::process
+
+    KKM[("KKM (защищённый канал с 1С)")]:::system
+    S1[("1С:Бухгалтерия (файловый режим, шифрование БД, аудит)")]:::storage
+    S2[("Excel-журнал платежей (пароль, доступ только кассиру и бухгалтеру)")]:::storage
+
+    Security[("Доп. меры: BitLocker/LUKS (диск сервера), шифрование канала ККМ-1С (TLS), аудит 1С, резервное копирование")]:::security
+
+    Patient -->|"Оплата услуги [Класс_4]"| P1
+    Cashier -->|"Сумма, услуга [Класс_4]"| P1
+    
+    P1 -->|"Фискальный чек [Класс_4]"| KKM
+    KKM -->|"Данные о платеже (TLS) [Класс_4]"| P2
+    P2 -->|"Запись в 1С (с аудитом) [Класс_4]"| S1
+    
+    P1 -->|"Данные платежа [Класс_4]"| P3
+    P3 -->|"Ручной ввод в Excel (пароль) [Класс_4]"| S2
+    
+    Accountant -->|"Запрос на отчётность [Класс_5]"| P4
+    P4 -->|"Чтение данных (RBAC) [Класс_4]"| S1
+    P4 -->|"Чтение данных (RBAC) [Класс_4]"| S2
+
+    S1 -.->|"защита"| Security
+    S2 -.->|"защита"| Security
+    KKM -.->|"защита"| Security

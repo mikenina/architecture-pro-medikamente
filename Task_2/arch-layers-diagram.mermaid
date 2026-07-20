@@ -1,0 +1,38 @@
+graph TD
+    classDef access fill:#e1f5fe,stroke:#01579b;
+    classDef logic fill:#c8e6c9,stroke:#2e7d32;
+    classDef storage fill:#fff3e0,stroke:#e65100;
+    classDef consume fill:#f3e5f5,stroke:#6a1b9a;
+
+    subgraph "Уровень доступа"
+        UI["Веб-портал / Моб. приложение"]:::access
+        API["API-шлюз (Аутентификация, ABAC, Аудит)"]:::access
+    end
+
+    subgraph "Уровень бизнес-логики и изоляции данных"
+        Core["Сервисы (Пациенты, Запись, Медкарта)"]:::logic
+        Anon["Сервис аналитики (Обезличивание, dbt)"]:::logic
+    end
+
+    subgraph "Уровень хранения (данные)"
+        OperationalDB[("Операционная БД (Шифрование, теги, согласия)")]:::storage
+        AuditLog[("Аудит-хранилище")]:::storage
+        DataLake[("Озеро данных (Только обезличенные данные)")]:::storage
+    end
+
+    subgraph "Уровень потребления"
+        BI["BI-порталы"]:::consume
+        Reports["Отчеты"]:::consume
+        ML["ML-модели"]:::consume
+    end
+
+    UI --> API
+    API --> Core
+    Core --> OperationalDB
+    API --> AuditLog
+    
+    Core --> Anon
+    Anon --> DataLake
+    DataLake --> BI
+    DataLake --> Reports
+    DataLake --> ML

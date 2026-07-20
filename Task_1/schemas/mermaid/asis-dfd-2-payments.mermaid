@@ -1,0 +1,32 @@
+graph TD
+    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px,stroke-dasharray:5 5;
+    classDef process fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef system fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px;
+
+    Patient["Пациент"]:::external
+    Cashier["Кассир"]:::external
+    Accountant["Бухгалтер"]:::external
+
+    P1(("2.1 Приём оплаты")):::process
+    P2(("2.2 Фиксация платежа в 1С")):::process
+    P3(("2.3 Двойной учёт в Excel")):::process
+    P4(("2.4 Сверка отчётности")):::process
+
+    KKM[("KKM")]:::system
+    S1[("1С:Бухгалтерия")]:::storage
+    S2[("Excel-журнал платежей")]:::storage
+
+    Patient -->|"Оплата услуги [Класс_4]"| P1
+    Cashier -->|"Сумма, услуга [Класс_4]"| P1
+    
+    P1 -->|"Фискальный чек [Класс_4]"| KKM
+    KKM -->|"Данные о платеже [Класс_4]"| P2
+    P2 -->|"Запись в 1С [Класс_4]"| S1
+    
+    P1 -->|"Данные платежа [Класс_4]"| P3
+    P3 -->|"Ручной ввод в Excel [Класс_4]"| S2
+    
+    Accountant -->|"Запрос на отчётность [Класс_5]"| P4
+    P4 -->|"Чтение данных [Класс_4]"| S1
+    P4 -->|"Чтение данных [Класс_4]"| S2

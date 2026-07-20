@@ -1,0 +1,31 @@
+graph TD
+    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px,stroke-dasharray:5 5;
+    classDef process fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef externalSystem fill:#ffebee,stroke:#c62828,stroke-width:2px;
+
+    Doctor["Врач"]:::external
+    ReceptionStaff["Сотрудник ресепшена"]:::external
+    Laboratory["Лаборатория (внешняя)"]:::externalSystem
+
+    P1(("3.1 Формирование направления")):::process
+    P2(("3.2 Создание реестра анализов")):::process
+    P3(("3.3 Передача в лабораторию")):::process
+    P4(("3.4 Приём результатов")):::process
+    P5(("3.5 Сохранение результатов")):::process
+
+    D1[("RegistryByDate.xlsx")]:::storage
+    D2[("D3: Data file (папка пациента)")]:::storage
+
+    Doctor -->|"Назначение анализов [Класс_2]"| P1
+    P1 -->|"ФИО, дата, список анализов [Класс_2]"| P2
+    
+    ReceptionStaff -->|"Ввод данных в реестр [Класс_2]"| P2
+    
+    P2 -->|"Реестр за день [Класс_2]"| D1
+    D1 -->|"Реестр анализов [Класс_2]"| P3
+    P3 -->|"Передача по email/файлу [Класс_2]"| Laboratory
+    
+    Laboratory -->|"Результаты анализов (PDF) [Класс_1]"| P4
+    P4 -->|"Результаты [Класс_1]"| P5
+    P5 -->|"Сохранение [Класс_1]"| D2

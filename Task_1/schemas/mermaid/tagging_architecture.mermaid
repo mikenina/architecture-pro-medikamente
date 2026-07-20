@@ -1,0 +1,43 @@
+graph TD
+    classDef layer1 fill:#e3f2fd,stroke:#1565c0;
+    classDef layer2 fill:#fff3e0,stroke:#e65100;
+    classDef layer3 fill:#f3e5f5,stroke:#6a1b9a;
+    classDef layer4 fill:#c8e6c9,stroke:#2e7d32;
+
+    subgraph "1. Слой присвоения тегов"
+        A1["Автоматическое тегирование"]
+        A2["Ручное тегирование"]
+    end
+
+    subgraph "2. Слой хранения тегов"
+        B["Хранилище тегов"]
+    end
+
+    subgraph "3. Слой политик"
+        P1["Политика шифрования"]
+        P2["Политика доступа (RBAC)"]
+        P3["Политика аудита"]
+        P4["Политика хранения"]
+        P5["Политика Data Lineage"]
+    end
+
+    subgraph "4. Слой исполнения"
+        C1["Шифрование"]
+        C2["Контроль доступа"]
+        C3["Аудит"]
+        C4["Удаление / архив"]
+        C5["Регистрация Lineage"]
+    end
+
+    A1 --> B
+    A2 --> B
+    B --> P1
+    B --> P2
+    B --> P3
+    B --> P4
+    B --> P5
+    P1 --> C1
+    P2 --> C2
+    P3 --> C3
+    P4 --> C4
+    P5 --> C5
